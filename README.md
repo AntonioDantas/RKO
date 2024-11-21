@@ -71,7 +71,7 @@ The code structure is documented in [1] and organized in the following manner:
     * **Data.h**: Represents the data structures.
     * **Output.h**: Stores the output functions, including the best solution found and statistical analysis of the MH.
 
-## File testScenario.csv is the input data problem, and each line consists of:
+## File testScenario.csv is the input data problem, and each line consists of
 
 - Instance Name
   
@@ -81,12 +81,12 @@ The code structure is documented in [1] and organized in the following manner:
 
 Users need to create a folder named "Instances/ProblemName", where the instances must be; users also need to create a folder named "Results", where the results files are written.
 
-## File Parameters:
+## File Parameters
 
 Users can choose two parameter settings: parameter tuning (option 0) and parameter control (option 1). 
  - For parameter tuning, users must inform the static configuration of each parameter in the file ParametersOffline.txt.
  - For parameter control, users must inform a set of possible values for each parameter in the file ParametersOnline.txt. We use the Q-Learning method to learn the best configuration for each metaheuristic during the search process.
 
-## OpenMP:
+## OpenMP
 
 The code was implemented to run in parallel using the OpenMP directive. In this setup, 9 threads are required for each execution. When the selected option is k = 9, each thread executes a different metaheuristic. Conversely, if the selected option is k < 9, all threads execute the metaheuristic corresponding to k. The threads run independently, and information about the best solutions is shared among them through a solution pool.
