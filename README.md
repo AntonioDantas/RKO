@@ -5,14 +5,14 @@ This is an implementation of the RKO to solve combinatorial optimization problem
 
 This algorithm's C++ code has been designed to be easy to reuse. Users can only implement specific functions (read and decoder). 
 
-Here, we have the RKO version 1.0 code.
+Here, we have the RKO version 1.0.1 code.
 
 
 ## References
 
-When using this algorithm in academic studies, please refer to the following works:
+When using this algorithm in academic studies, please refer to the following work:
 
-RKO version 1.0
+RKO version 1.0.1
 
 [1] Chaves, A.A., Resende, M.G.C., Schuetz, M.J.A.,  Brubaker, J.K., Katzgraber, H.G., Arruda, E.F., Silva, R.M.A. 
 A Random-Key Optimizer for Combinatorial Optimization. This paper wiil be submitted to the Journal of Heuristics.
@@ -84,3 +84,7 @@ Users need to create a folder named "Instances/ProblemName", where the instances
 Users can choose two parameter settings: parameter tuning (option 0) and parameter control (option 1). 
  - For parameter tuning, users must inform the static configuration of each parameter in the file ParametersOffline.txt.
  - For parameter control, users must inform a set of possible values for each parameter in the file ParametersOnline.txt. We use the Q-Learning method to learn the best configuration for each metaheuristic during the search process.
+
+## OpenMP:
+
+The code was implemented to run in parallel using the OpenMP directive. In this setup, 9 threads are required for each execution. When the selected option is k = 9, each thread executes a different metaheuristic. Conversely, if the selected option is k < 9, all threads execute the metaheuristic corresponding to k. The threads run independently, and information about the best solutions is shared among them through a solution pool.
