@@ -51,9 +51,7 @@ This code has been designed to solve the Traveling Salesman Problem (TSP). To so
 
 "BRKGA_CS"   = 8,
 
-"RKO"        = 9,
-
-"MultiStart" = 10.
+"RKO"        = 9.
 
 * Or compile via terminal: `g++ -std=c++20 -o runTest main.cpp -O3 -fopenmp`
 
