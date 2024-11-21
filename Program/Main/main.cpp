@@ -166,8 +166,7 @@ int main(int argc, char *argv[ ])
                 "GA",        // 6
                 "LNS",       // 7
                 "BRKGA_CS",  // 8
-                "RKO",       // 9
-                "MultiStart" // 10
+                "RKO"        // 9
             };
 
             if (method <= NUM_MH) strcpy(nameMH,algorithms[method]);
@@ -207,22 +206,40 @@ int main(int argc, char *argv[ ])
             }
             // run a specific metaheuristic method
             else if (method < 9){
+                
                 // create initial solutions in the pool of solutions
                 CretePoolSolutions();
 
                 // best solution found in this run
                 bestSolution = pool[0];
 
-                // get the associated function
-                void (*function_mh)(int, int) = functions_MH[method];
+                omp_set_num_threads(NUM_MH);
+                #pragma omp parallel private(RKorder, rng) shared(bestSolution, best_time, stop_execution)
+                {
+                    #pragma omp for 
+                    for (int i = 0; i < NUM_MH; ++i) { 
+                        // checks the cancellation point
+                        #pragma omp cancellation point for
 
-                // calls the metaheuristic [method] function
-                function_mh(method, control);
+                        // get the associated function
+                        void (*function_mh)(int, int) = functions_MH[method];
+                        
+                        if (debug) printf("\nThread %d executing MH_%d %s.", omp_get_thread_num(), i, algorithms[method]);
+                        
+                        // calls the metaheuristic function
+                        function_mh(method, control);
+
+                        // cancels when a thread ends
+                        stop_execution.store(true);
+                        #pragma omp cancel for
+                    }
+                }
+                stop_execution.store(false);
             }
-            // run a multi-start method
-            else{
-                strcpy(nameMH,algorithms[method]);
-                MultiStart(method);
+            // option not implemented
+            else {
+                printf("\n\nThis solver has not been implemented.\n");
+                exit(1);
             }
 
             // clock_gettime(CLOCK_MONOTONIC, &Tend);
