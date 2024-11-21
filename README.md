@@ -7,6 +7,8 @@ This algorithm's C++ code has been designed to be easy to reuse. Users can only 
 
 Here, we have the RKO version 1.0.1 code.
 
+![RKO-JH](https://github.com/user-attachments/assets/0527b171-46b4-4dd5-b9e2-ad15e3e675ce)
+
 
 ## References
 
