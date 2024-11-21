@@ -1,5 +1,5 @@
 
-# RKO - Random-key optimizer Teste
+# RKO - Random-key optimizer
 
 This is an implementation of the RKO to solve combinatorial optimization problems. The code was prepared for Unix and Windows systems. However, the openMP paradigm needs to be enabled.
 
