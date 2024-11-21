@@ -17,7 +17,7 @@ When using this algorithm in academic studies, please refer to the following wor
 RKO version 1.0.1
 
 [1] Chaves, A.A., Resende, M.G.C., Schuetz, M.J.A.,  Brubaker, J.K., Katzgraber, H.G., Arruda, E.F., Silva, R.M.A. 
-A Random-Key Optimizer for Combinatorial Optimization. This paper wiil be submitted to the Journal of Heuristics.
+A Random-Key Optimizer for Combinatorial Optimization. This paper has been submitted to the Journal of Heuristics.
 
 Available here in technical report form: 
 https://doi.org/10.48550/arXiv.2411.04293
@@ -84,9 +84,9 @@ Users need to create a folder named "Instances/ProblemName", where the instances
 ## File Parameters
 
 Users can choose two parameter settings: parameter tuning (option 0) and parameter control (option 1). 
- - For parameter tuning, users must inform the static configuration of each parameter in the file ParametersOffline.txt.
- - For parameter control, users must inform a set of possible values for each parameter in the file ParametersOnline.txt. We use the Q-Learning method to learn the best configuration for each metaheuristic during the search process.
+ - For parameter tuning, users must inform the static configuration of each parameter in ParametersOffline.txt.
+ - For parameter control, users must inform a set of possible values for each parameter in ParametersOnline.txt. We use the Q-Learning method to learn the best configuration for each metaheuristic during the search process.
 
 ## OpenMP
 
-The code was implemented to run in parallel using the OpenMP directive. In this setup, 9 threads are required for each execution. When the selected option is k = 9, each thread executes a different metaheuristic. Conversely, if the selected option is k < 9, all threads execute the metaheuristic corresponding to k. The threads run independently, and information about the best solutions is shared among them through a solution pool.
+The code was implemented to run in parallel using the OpenMP directive. In this setup, nine threads are required for each run. When the selected option is k = 9, each thread executes a different metaheuristic. Conversely, if the chosen option is k < 9, all threads execute the metaheuristic corresponding to k. The threads run independently, and information about the best solutions is shared through a solution pool.
