@@ -5,7 +5,7 @@ This is an implementation of the RKO to solve combinatorial optimization problem
 
 This algorithm's C++ code has been designed to be easy to reuse. Users can only implement specific functions (read and decoder). 
 
-Here, we have the RKO version 1.0.1 code.
+Here, we have the RKO version 1.0.1 code. RKO is constantly improving based on users’ feedback. 
 
 ![RKO-JH](https://github.com/user-attachments/assets/0527b171-46b4-4dd5-b9e2-ad15e3e675ce)
 
