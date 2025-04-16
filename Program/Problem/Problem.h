@@ -18,11 +18,19 @@ struct TNode
 	double x;
 	double y;
 }; 
+struct TVehicle								
+{
+	int id;
+	double x;
+	double y;
+	double e;
+}; 
 
 //------ DEFINITION OF GLOBAL CONSTANTS AND VARIABLES OF SPECIFIC PROBLEM  ----------
 
 static std::vector <std::vector <double> > dist;	// matrix with Euclidean distance
-static std::vector <TNode> node;					// vector of TSP nodes
+static std::vector <TNode> node;					// vector of nodes
+static std::vector <TVehicle> vehicle;			    // vector of vehicles
 
 
 //----------------------- IMPLEMENTATION OF FUNCTIONS  -------------------------------
@@ -51,13 +59,19 @@ void ReadData(char nameTable[])
 
     // read instance head
     char temp[100];
+    int vehicleCount;
     fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
+    fscanf(arq, "%d", &vehicleCount);
 
+    // read vehicle informations
+    vehicle.clear();
+    TVehicle vehicleTemp;
+    for (int i=0; i < vehicleCount; i++)
+    {
+        fscanf(arq, "%d %lf %lf %lf", &vehicleTemp.id, &vehicleTemp.x, &vehicleTemp.y, &vehicleTemp.e);
+    	vehicle.push_back(vehicleTemp);
+    }
+    
     // read node informations
     int nAux = 0;
     node.clear();
