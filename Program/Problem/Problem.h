@@ -5,52 +5,55 @@
 #define _PROBLEM_H
 
 #include "../Main/Data.h"
+#include <ranges>
 
 // Global Variables
-extern int n;                                       // size of the vector solution
+extern int n; // size of the vector solution
 
 //---------------------- DEFINITION OF TYPES OF PROBLEM SPECIFIC --------------------
 
 // struct with node informations
-struct TNode								
+struct TNode
 {
-	int id;
-	double x;
-	double y;
-}; 
-struct TVehicle								
+    int id;
+    double x;
+    double y;
+    double p;
+};
+struct TVehicle
 {
-	int id;
-	double x;
-	double y;
-	double e;
-}; 
+    int id;
+    double x;
+    double y;
+    double e;
+};
 
 //------ DEFINITION OF GLOBAL CONSTANTS AND VARIABLES OF SPECIFIC PROBLEM  ----------
 
-static std::vector <std::vector <double> > dist;	// matrix with Euclidean distance
-static std::vector <TNode> node;					// vector of nodes
-static std::vector <TVehicle> vehicle;			    // vector of vehicles
-
+static std::vector<std::vector<double>> dist;  // matrix with Euclidean distance
+static std::vector<std::vector<double>> distV; // matrix with Euclidean distance for vehicles
+static std::vector<TNode> node;                // vector of nodes
+static std::vector<TVehicle> vehicle;          // vector of vehicles
+static double maxDistance;                     // max of distances
+static double minDistance;                     // min of distances
 
 //----------------------- IMPLEMENTATION OF FUNCTIONS  -------------------------------
-
 
 /************************************************************************************
  Method: ReadData
  Description: read input data of the problem
 *************************************************************************************/
 void ReadData(char nameTable[])
-{ 
+{
     char name[200] = "../Instances/";
-    strcat(name,nameTable);
+    strcat(name, nameTable);
 
     FILE *arq;
-    arq = fopen(name,"r");
+    arq = fopen(name, "r");
 
     if (arq == NULL)
     {
-        printf("\nERROR: File (%s) not found!\n",name);
+        printf("\nERROR: File (%s) not found!\n", name);
         getchar();
         exit(1);
     }
@@ -59,19 +62,8 @@ void ReadData(char nameTable[])
 
     // read instance head
     char temp[100];
-    int vehicleCount;
     fgets(temp, sizeof(temp), arq);
-    fscanf(arq, "%d", &vehicleCount);
 
-    // read vehicle informations
-    vehicle.clear();
-    TVehicle vehicleTemp;
-    for (int i=0; i < vehicleCount; i++)
-    {
-        fscanf(arq, "%d %lf %lf %lf", &vehicleTemp.id, &vehicleTemp.x, &vehicleTemp.y, &vehicleTemp.e);
-    	vehicle.push_back(vehicleTemp);
-    }
-    
     // read node informations
     int nAux = 0;
     node.clear();
@@ -79,10 +71,11 @@ void ReadData(char nameTable[])
 
     while (!feof(arq))
     {
-    	fscanf(arq, "%d %lf %lf", &nodeTemp.id, &nodeTemp.x, &nodeTemp.y);
-    	node.push_back(nodeTemp);
+        fscanf(arq, "%d %lf %lf %lf", &nodeTemp.id, &nodeTemp.x, &nodeTemp.y, &nodeTemp.p);
+        // printf("\n %d %lf %lf %lf", nodeTemp.id, nodeTemp.x, nodeTemp.y, nodeTemp.p);
+        node.push_back(nodeTemp);
 
-    	nAux++;
+        nAux++;
     }
     fclose(arq);
 
@@ -90,15 +83,34 @@ void ReadData(char nameTable[])
     dist.clear();
     dist.resize(nAux, std::vector<double>(nAux));
 
-    for (int i=0; i<nAux; i++)
+    // for points
+    maxDistance = 0.0;
+    minDistance = INFINITY;
+
+    for (int i = 0; i < nAux; i++)
     {
-    	for (int j=i; j<nAux; j++)
-    	{
-    		dist[i][j] = dist[j][i] = (floor (sqrt( (node[j].x - node[i].x) * (node[j].x - node[i].x) +
-    										        (node[j].y - node[i].y) * (node[j].y - node[i].y) ) + 0.5 ) )/1.0;
-    	}
+        for (int j = i; j < nAux; j++)
+        {
+            double dx = node[j].x - node[i].x;
+            double dy = node[j].y - node[i].y;
+
+            dist[i][j] = dist[j][i] = sqrt(dx * dx + dy * dy);
+
+            if (maxDistance < dist[i][j])
+            {
+                maxDistance = dist[i][j];
+            }
+
+            if (minDistance > dist[i][j])
+            {
+                minDistance = dist[i][j];
+            }
+
+            // printf("%.6f ", dist[i][j]);
+        }
+        // printf("\n");
     }
-    
+
     n = nAux;
 }
 
@@ -109,78 +121,91 @@ void ReadData(char nameTable[])
 double Decoder(TSol s)
 {
     // create an initial list of candidates
-    std::vector <int> sC(n);  
-    for (int j = 0; j < n; j++){ sC[j] = j;}
-
-    // sort the problem vector based on the values in the rk vector
-    std::sort(sC.begin(), sC.end(), [&s](int i1, int i2) {
-        return s.rk[i1] < s.rk[i2];
-    });
-
-    // problem solution
-    std::vector <int> sol; 
-
-    // partial route with three points
-    sol.push_back(sC[0]);
-    sol.push_back(sC[1]);
-    sol.push_back(sC[2]);
-
-    // construct a solution with cheapest insertion
-    for (int i = 3; i<n; i++)
+    std::vector<int> sC(n);
+    for (int i = 0; i < n; i++)
     {
-        // find the cheapest position to insert the i-th point of sC
-        int bestPosition = 0;
-        float costBest = INFINITY;
-        float costInsertion = 0;
-        for (unsigned int j = 0; j<sol.size(); j++)
-        {
-            if (j == sol.size()-1)
-            {
-                // cost to insert between i-1 and 0
-                costInsertion = dist[sol[j]][sC[i]] + dist[sC[i]][sol[0]] - dist[sol[j]][sol[0]];
-                if (costInsertion < costBest)
-                {
-                    costBest = costInsertion;
-                    bestPosition = j;
-                }
-            }
-            else
-            {
-                // cost to insert between i and i+1
-                costInsertion = dist[sol[j]][sC[i]] + dist[sC[i]][sol[j+1]] - dist[sol[j]][sol[j+1]];
-                if (costInsertion < costBest)
-                {
-                    costBest = costInsertion;
-                    bestPosition = j;
-                }
-            }
-        }
-
-        // insert the i-th point in the cheapest position
-        sol.insert(sol.begin()+bestPosition+1,sC[i]);
+        sC[i] = i;
     }
 
-    //calculate objective function
+    // printf("\n Decoder Antes");
+    // for (int i=0; i<n; i++)
+    //     printf("\n %d %f %d", sC[i], s.rk[i], node[sC[i]].id);
+
+    // sort the problem vector based on the values in the rk vector
+    std::sort(sC.begin(), sC.end(), [&s](int i1, int i2)
+              { return s.rk[i1] < s.rk[i2]; });
+
+    // printf("\n Decoder Depois");
+    // for (int i=0; i<n; i++)
+    //     printf("\n %d %f %d", sC[i], s.rk[i], node[sC[i]].id);
+
+    // problem solution
+    std::vector<int> sol;
     s.ofv = 0.0;
-    for (int i=0; i<n; i++){
-        s.ofv += dist[sol[i%n]][sol[(i+1)%n]];
+
+    int lastNode = -1;
+    int current = 0;
+    int currentVehicle = -1;
+    double currentDistance = 0;
+
+    while (sol.size() < n)
+    {
+        if (current > n - 1)
+        {
+            current = 0;
+        }
+
+        // printf("\n current %d lastNode %d currentVehicle %d nodeid %d", current, lastNode, currentVehicle, node[sC[current]].id);
+
+        if (node[sC[current]].id > 1000) // isVehicle
+        {
+            currentDistance = 0;
+            currentVehicle = lastNode = current;
+            sol.push_back(sC[current]);
+            current++;
+            continue;
+        }
+
+        if (currentVehicle == -1)
+        {
+            current++;
+            continue;
+        }
+
+        float distance = dist[sC[lastNode]][sC[current]];
+        currentDistance += distance;
+
+        if (currentDistance > node[sC[currentVehicle]].p)
+        {
+            return maxDistance * n;
+        }
+        else
+        {
+            s.ofv += distance;
+            sol.push_back(sC[current]);
+        }
+
+        lastNode = current;
+        current++;
     }
 
     // print the solution in the screen
     if (debug && print)
     {
-        for (int i=0; i<n; i++)
-		    printf("%d ", sol[i]);
+        printf("\n");
+        for (int i = 0; i < n; i++)
+            printf("%d ", node[sol[i]].id);
     }
 
     // print the solution in a file
     if (!debug && print)
     {
-        for (int i=0; i<n; i++)
-		    fprintf(arqSol,"%d ", sol[i]);
+        for (int i = 0; i < n; i++)
+            fprintf(arqSol, "%d ", sol[i]);
     }
 
     // return the objective function value
+    // printf("\n objective function value %f \n\n", s.ofv);
     return s.ofv;
 }
 
@@ -190,10 +215,9 @@ double Decoder(TSol s)
 *************************************************************************************/
 void FreeMemoryProblem()
 {
-    //specific problem
+    // specific problem
     dist.clear();
     node.clear();
 }
-
 
 #endif
