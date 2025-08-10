@@ -20,22 +20,11 @@ struct TNode
     double y;
     double p;
 };
-struct TVehicle
-{
-    int id;
-    double x;
-    double y;
-    double e;
-};
 
 //------ DEFINITION OF GLOBAL CONSTANTS AND VARIABLES OF SPECIFIC PROBLEM  ----------
 
 static std::vector<std::vector<double>> dist;  // matrix with Euclidean distance
-static std::vector<std::vector<double>> distV; // matrix with Euclidean distance for vehicles
 static std::vector<TNode> node;                // vector of nodes
-static std::vector<TVehicle> vehicle;          // vector of vehicles
-static double maxDistance;                     // max of distances
-static double minDistance;                     // min of distances
 
 //----------------------- IMPLEMENTATION OF FUNCTIONS  -------------------------------
 
@@ -84,9 +73,6 @@ void ReadData(char nameTable[])
     dist.resize(nAux, std::vector<double>(nAux));
 
     // for points
-    maxDistance = 0.0;
-    minDistance = INFINITY;
-
     for (int i = 0; i < nAux; i++)
     {
         for (int j = i; j < nAux; j++)
@@ -95,20 +81,25 @@ void ReadData(char nameTable[])
             double dy = node[j].y - node[i].y;
 
             dist[i][j] = dist[j][i] = sqrt(dx * dx + dy * dy);
-
-            if (maxDistance < dist[i][j])
-            {
-                maxDistance = dist[i][j];
-            }
-
-            if (minDistance > dist[i][j])
-            {
-                minDistance = dist[i][j];
-            }
-
-            // printf("%.6f ", dist[i][j]);
         }
-        // printf("\n");
+    }
+    
+    double minDist = HUGE_VAL;
+    double maxDist = -HUGE_VAL;
+    for (int i = 0; i < nAux; i++) {
+        for (int j = 0; j < nAux; j++) {
+            minDist = std::min(minDist, dist[i][j]);
+            maxDist = std::max(maxDist, dist[i][j]);
+        }
+    }
+
+    double range = maxDist - minDist;
+    if (range > 0) {
+        for (int i = 0; i < nAux; i++) {
+            for (int j = 0; j < nAux; j++) {
+                dist[i][j] = (dist[i][j] - minDist) / range;
+            }
+        }
     }
 
     n = nAux;
@@ -127,17 +118,9 @@ double Decoder(TSol s)
         sC[i] = i;
     }
 
-    // printf("\n Decoder Antes");
-    // for (int i=0; i<n; i++)
-    //     printf("\n %d %f %d", sC[i], s.rk[i], node[sC[i]].id);
-
     // sort the problem vector based on the values in the rk vector
     std::sort(sC.begin(), sC.end(), [&s](int i1, int i2)
               { return s.rk[i1] < s.rk[i2]; });
-
-    // printf("\n Decoder Depois");
-    // for (int i=0; i<n; i++)
-    //     printf("\n %d %f %d", sC[i], s.rk[i], node[sC[i]].id);
 
     // problem solution
     std::vector<int> sol;
@@ -154,8 +137,6 @@ double Decoder(TSol s)
         {
             current = 0;
         }
-
-        // printf("\n current %d lastNode %d currentVehicle %d nodeid %d", current, lastNode, currentVehicle, node[sC[current]].id);
 
         if (node[sC[current]].id > 1000) // isVehicle
         {
@@ -175,15 +156,8 @@ double Decoder(TSol s)
         float distance = dist[sC[lastNode]][sC[current]];
         currentDistance += distance;
 
-        if (currentDistance > node[sC[currentVehicle]].p)
-        {
-            return maxDistance * n;
-        }
-        else
-        {
-            s.ofv += distance;
-            sol.push_back(sC[current]);
-        }
+        s.ofv += ALPHA * distance + ((1 - ALPHA) * node[sC[current]].p);
+        sol.push_back(sC[current]);
 
         lastNode = current;
         current++;
@@ -204,9 +178,7 @@ double Decoder(TSol s)
             fprintf(arqSol, "%d ", sol[i]);
     }
 
-    // return the objective function value
-    // printf("\n objective function value %f \n\n", s.ofv);
-    return s.ofv;
+    return (currentDistance > node[sC[currentVehicle]].p) ? s.ofv * 9999 : s.ofv;
 }
 
 /************************************************************************************

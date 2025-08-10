@@ -83,7 +83,7 @@ int main(int argc, char *argv[ ])
 	while (!feof(arqProblems))
 	{
 		// read the name of instances, debug mode, local search module, maximum time, maximum number of runs, maximum number of threads
-        if (fscanf(arqProblems,"%s %d %d", nameTable, &MAXTIME, &MAXRUNS) == 0) {
+        if (fscanf(arqProblems,"%s %d %d %lf", nameTable, &MAXTIME, &MAXRUNS, &ALPHA) == 0) {
             printf("\nERROR: File %s not found\n", nameTable);
             exit(1);
         }

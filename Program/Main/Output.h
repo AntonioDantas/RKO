@@ -46,6 +46,7 @@ void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, ch
 	}
 
     fprintf(arqSol,"\n\nInstance: %s", instance);
+    fprintf(arqSol,"\n\nAlpha: %lf", ALPHA);
 	fprintf(arqSol,"\nMethod: %s",mh);
 	fprintf(arqSol,"\nSol: ");
 	// for (int i=0; i<n; i++)
