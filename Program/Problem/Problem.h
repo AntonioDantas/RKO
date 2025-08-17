@@ -94,10 +94,31 @@ void ReadData(char nameTable[])
     }
 
     double range = maxDist - minDist;
+    //printf("\nMin Dist: %lf, Max Dist: %lf, Range Dist: %lf", minDist, maxDist, range);
     if (range > 0) {
         for (int i = 0; i < nAux; i++) {
             for (int j = 0; j < nAux; j++) {
                 dist[i][j] = (dist[i][j] - minDist) / range;
+            }
+        }
+    }
+
+    double minP = HUGE_VAL;
+    double maxP = -HUGE_VAL;
+    
+    for (int i = 0; i < nAux; i++) {
+        if (node[i].id <= 1000) { 
+            minP = std::min(minP, node[i].p);
+            maxP = std::max(maxP, node[i].p);
+        }
+    }
+
+    double rangeP = maxP - minP;
+    //printf("\nMin P: %lf, Max P: %lf, Range P: %lf", minP, maxP, rangeP);
+    if (rangeP > 0) {
+        for (int i = 0; i < nAux; i++) {
+            if (node[i].id <= 1000) {
+                node[i].p = (node[i].p - minP) / rangeP;
             }
         }
     }
@@ -109,7 +130,7 @@ void ReadData(char nameTable[])
  Method: Decoders
  Description: mapping the random-key solutions into problem solutions
 *************************************************************************************/
-double Decoder(TSol s)
+double Decoder(TSol& s)
 {
     // create an initial list of candidates
     std::vector<int> sC(n);
@@ -125,6 +146,8 @@ double Decoder(TSol s)
     // problem solution
     std::vector<int> sol;
     s.ofv = 0.0;
+    s.f1 = 0.0;
+    s.f2 = 0.0;
 
     int lastNode = -1;
     int current = 0;
@@ -156,9 +179,17 @@ double Decoder(TSol s)
         float distance = dist[sC[lastNode]][sC[current]];
         currentDistance += distance;
 
-        s.ofv += ALPHA * distance + ((1 - ALPHA) * node[sC[current]].p);
+        s.f1 += (ALPHA * distance);
+        s.f2 += ((1 - ALPHA) * node[sC[current]].p);
+
+        s.ofv += ((ALPHA * distance) - ((1 - ALPHA) * node[sC[current]].p));
         sol.push_back(sC[current]);
 
+        if (currentDistance > node[currentVehicle].p)
+        {
+            return s.ofv * 9999;
+        }
+        
         lastNode = current;
         current++;
     }
@@ -178,7 +209,7 @@ double Decoder(TSol s)
             fprintf(arqSol, "%d ", sol[i]);
     }
 
-    return (currentDistance > node[sC[currentVehicle]].p) ? s.ofv * 9999 : s.ofv;
+    return s.ofv;
 }
 
 /************************************************************************************

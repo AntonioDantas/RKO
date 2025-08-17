@@ -75,6 +75,8 @@ int main(int argc, char *argv[ ])
     sBest.flag = 0;
     sBest.label = 0;
     sBest.ofv = 0;
+    sBest.f1 = 0;
+    sBest.f2 = 0;
     sBest.similar = 0;
     sBest.promising = 0;
     sBest.rk.clear();
@@ -100,6 +102,8 @@ int main(int argc, char *argv[ ])
 
         // best solutions found in MAXRUNS
         sBest.ofv = INFINITY;
+        sBest.f1 = INFINITY;
+        sBest.f2 = INFINITY;
 
 		// run RKO MaxRuns for each instance
         printf("\n\nInstance: %s \nRun: ", instance);

@@ -21,6 +21,8 @@ void WriteSolutionScreen(char mh[], TSol s, int n, float timeBest, float timeTot
 	print = false;
 
 	printf("\nofv: %.5lf", s.ofv); 
+	printf("\nf1: %.5lf", s.f1); 
+	printf("\nf2: %.5lf", s.f2); 
 	printf("\nTotal time: %.3f",timeTotal);
 	printf("\nBest time: %.3f\n\n",timeBest);
 
@@ -49,14 +51,16 @@ void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, ch
     fprintf(arqSol,"\n\nAlpha: %lf", ALPHA);
 	fprintf(arqSol,"\nMethod: %s",mh);
 	fprintf(arqSol,"\nSol: ");
-	// for (int i=0; i<n; i++)
-	// 	fprintf(arqSol,"%.3lf ", s.rk[i]);
+	for (int i=0; i<n; i++)
+		fprintf(arqSol,"%.3lf ", s.rk[i]);
 
 	print = true;
 	s.ofv = Decoder(s);
 	print = false;
 
 	fprintf(arqSol,"\nofv: %lf", s.ofv);
+	fprintf(arqSol,"\nf1: %lf", s.f1);
+	fprintf(arqSol,"\nf2: %lf", s.f2);
   	fprintf(arqSol,"\nBest time: %.3f",timeBest);
 	fprintf(arqSol,"\nTotal time:%.3f \n",timeTotal);
 

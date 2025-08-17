@@ -11,6 +11,8 @@ struct TSol
 {
     std::vector <double> rk;                // random-key vector
     double ofv;                             // objetive function value
+    double f1;                              // f1 function value
+    double f2;                              // f2 function value
     int label;                              // defines a community solution with a number
     int similar;                            // indicates if a solution is similar to other (0 no, 1 yes)
     int flag;                               // indicates if a local search has already been performed on this solution (0 no, 1 yes)
