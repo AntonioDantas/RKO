@@ -91,7 +91,7 @@ int main(int argc, char *argv[ ])
         }
         strcpy(instance,nameTable);
         
-        double foBest = INFINITY,
+        double foBest = INFINITY, f1 = INFINITY, f2 = INFINITY,
                foAverage = 0;
 
         float timeBest = 0,
@@ -254,8 +254,11 @@ int main(int argc, char *argv[ ])
                 sBest = bestSolution;
 
             // calculate best and average results
-            if (bestSolution.ofv < foBest)
+            if (bestSolution.ofv < foBest){
                 foBest = bestSolution.ofv;
+                f1 = bestSolution.f1;
+                f2 = bestSolution.f2;
+            }
 
             foAverage += bestSolution.ofv;
 
@@ -274,12 +277,12 @@ int main(int argc, char *argv[ ])
 
         if (!debug)
         {
-        	WriteSolution(nameMH, sBest, n, timeBest, timeTotal, instance);
-        	WriteResults(nameMH, foBest, foAverage, ofvs, timeBest, timeTotal, instance);
+        	WriteSolution(nameMH, sBest, n, timeBest, timeTotal, instance, ALPHA);
+        	WriteResults(nameMH, foBest, f1, f2, foAverage, ofvs, timeBest, timeTotal, instance, ALPHA);
         }
         else
         {
-            WriteSolutionScreen(nameMH, sBest, n, timeBest, timeTotal, instance);
+            WriteSolutionScreen(nameMH, sBest, n, timeBest, timeTotal, instance, ALPHA);
         }
 
         // free memory with problem data

@@ -163,15 +163,32 @@ double Decoder(TSol& s)
 
         if (node[sC[current]].id > 1000) // isVehicle
         {
-            currentDistance = 0;
-            currentVehicle = lastNode = current;
+            if (lastNode != -1)
+            {
+                float distance = dist[sC[lastNode]][sC[current]];
+                currentDistance += distance;
+                s.f1 += distance;
+                s.f2 += node[sC[lastNode]].p;
+                s.ofv += ((ALPHA * distance) - ((1 - ALPHA) * node[sC[lastNode]].p));
+            }
+
+            if (currentDistance > node[sC[current]].p)
+            {
+                return s.ofv * 9999;
+            }
+
             sol.push_back(sC[current]);
+            currentDistance = 0;
+            currentVehicle = current;
+            lastNode = current;
             current++;
             continue;
         }
 
-        if (currentVehicle == -1)
+        if (lastNode == -1 || node[sC[lastNode]].id > 1000)
         {
+            sol.push_back(sC[current]);
+            lastNode = current;
             current++;
             continue;
         }
@@ -179,16 +196,10 @@ double Decoder(TSol& s)
         float distance = dist[sC[lastNode]][sC[current]];
         currentDistance += distance;
 
-        s.f1 += (ALPHA * distance);
-        s.f2 += ((1 - ALPHA) * node[sC[current]].p);
-
+        s.f1 += distance;
+        s.f2 += node[sC[current]].p;
         s.ofv += ((ALPHA * distance) - ((1 - ALPHA) * node[sC[current]].p));
         sol.push_back(sC[current]);
-
-        if (currentDistance > node[currentVehicle].p)
-        {
-            return s.ofv * 9999;
-        }
         
         lastNode = current;
         current++;
