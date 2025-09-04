@@ -1,0 +1,4 @@
+/Results/*
+/Program/*
+**.exe
+main.o

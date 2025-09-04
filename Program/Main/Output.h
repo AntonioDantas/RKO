@@ -10,11 +10,11 @@
 
 #include "Data.h"
  
-void WriteSolutionScreen(char mh[], TSol s, int n, float timeBest, float timeTotal, char instance[])
+void WriteSolutionScreen(char mh[], TSol s, int n, float timeBest, float timeTotal, char instance[], double alpha)
 {
-	printf("\n\n\nMetaheuristic: %s \nInstance: %s \nsol: ", mh, instance);
-	// for (int i=0; i<n; i++)
-	// 	printf("%.3lf ", s.rk[i]);
+	printf("\n\n\nMetaheuristic: %s \nInstance: %s \nAlpha: %lf \nsol: ", mh, instance, alpha);
+	for (int i=0; i<n; i++)
+	 	printf("%.3lf ", s.rk[i]);
 
 	print = true;
 	s.ofv = Decoder(s);
@@ -32,7 +32,7 @@ void WriteSolutionScreen(char mh[], TSol s, int n, float timeBest, float timeTot
 		printf("%.2lf\n", pool[i].ofv);
 }
 
-void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, char instance[])
+void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, char instance[], double alpha)
 {
 	char name[256]="../Results/Solutions_";
 	strcat(name,mh);
@@ -48,7 +48,7 @@ void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, ch
 	}
 
     fprintf(arqSol,"\n\nInstance: %s", instance);
-    fprintf(arqSol,"\n\nAlpha: %lf", ALPHA);
+    fprintf(arqSol,"\nAlpha: %lf", alpha);
 	fprintf(arqSol,"\nMethod: %s",mh);
 	fprintf(arqSol,"\nSol: ");
 	for (int i=0; i<n; i++)
@@ -67,7 +67,7 @@ void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, ch
 	fclose(arqSol);
 }
 
-void WriteResults(char mh[], double ofv, double ofvAverage, std::vector <double> ofvs, float timeBest, float timeTotal, char instance[])
+void WriteResults(char mh[], double ofv, double f1, double f2, double ofvAverage, std::vector <double> ofvs, float timeBest, float timeTotal, char instance[], double alpha)
 {
 	char name[256]="../Results/Results_";
 	strcat(name,mh);
@@ -84,12 +84,15 @@ void WriteResults(char mh[], double ofv, double ofvAverage, std::vector <double>
 	}
 
 	fprintf(arq,"\n%s", instance);
+	fprintf(arq,"\t%lf", alpha);
 	fprintf(arq,"\t%s", mh);
     fprintf(arq,"\t%d", (int)ofvs.size());
     for (unsigned int i=0; i<ofvs.size(); i++){
         fprintf(arq,"\t%lf", ofvs[i]);   
 	}
 	fprintf(arq,"\t%lf", ofv);
+	fprintf(arq,"\t%lf", f1);
+	fprintf(arq,"\t%lf", f2);
 	fprintf(arq,"\t%lf", ofvAverage);
 	fprintf(arq,"\t%.3f", timeBest);
 	fprintf(arq,"\t%.3f", timeTotal);
