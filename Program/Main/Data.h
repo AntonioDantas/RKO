@@ -10,6 +10,7 @@
 struct TSol
 {
     std::vector <double> rk;                // random-key vector
+    std::vector<std::vector<int>> routes;   // routes of vehicles
     double ofv;                             // objetive function value
     double f1;                              // f1 function value
     double f2;                              // f2 function value

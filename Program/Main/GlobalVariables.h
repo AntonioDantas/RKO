@@ -11,9 +11,11 @@ int n;                                      // size of the random-key vector
 // Input File
 char instance[100];                         // name of instance
 int debug = 1;                              // 0 - run mode      		    1 - debug mode
-int MAXTIME = 100;                            // maximum runtime
-int MAXRUNS =  100;                           // maximum number of runs of the method
-double ALPHA =  1;                           // maximum number of runs of the method
+int MAXTIME = 100;                          // maximum runtime
+int MAXRUNS =  100;                         // maximum number of runs of the method
+int VMAX = 1;                               // maximum number of visits
+double ALPHA =  1;                          // weight of the objective function
+double REDUCTION = 0.8;                     // reduction value for the probabilistic
 
 // Run
 double start_time, end_time, best_time;     // computational times

@@ -1,4 +1,5 @@
 /Results/*
-/Program/*
 **.exe
 main.o
+**/main.o
+**/runTest.exe

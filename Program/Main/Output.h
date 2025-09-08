@@ -12,7 +12,7 @@
  
 void WriteSolutionScreen(char mh[], TSol s, int n, float timeBest, float timeTotal, char instance[], double alpha)
 {
-	printf("\n\n\nMetaheuristic: %s \nInstance: %s \nAlpha: %lf \nsol: ", mh, instance, alpha);
+	printf("\n\n\nMetaheuristic: %s \nInstance: %s \nAlpha: %lf \nSol: ", mh, instance, alpha);
 	for (int i=0; i<n; i++)
 	 	printf("%.3lf ", s.rk[i]);
 
@@ -23,8 +23,8 @@ void WriteSolutionScreen(char mh[], TSol s, int n, float timeBest, float timeTot
 	printf("\nofv: %.5lf", s.ofv); 
 	printf("\nf1: %.5lf", s.f1); 
 	printf("\nf2: %.5lf", s.f2); 
-	printf("\nTotal time: %.3f",timeTotal);
-	printf("\nBest time: %.3f\n\n",timeBest);
+	printf("\nTotalTime: %.3f",timeTotal);
+	printf("\nBestTime: %.3f\n\n",timeBest);
 
 	// print solution pool 
 	printf("\nSolution Pool:\n");
@@ -47,7 +47,7 @@ void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, ch
 		exit(1);
 	}
 
-    fprintf(arqSol,"\n\nInstance: %s", instance);
+    fprintf(arqSol,"\n\nInstance: '%s'", instance);
     fprintf(arqSol,"\nAlpha: %lf", alpha);
 	fprintf(arqSol,"\nMethod: %s",mh);
 	fprintf(arqSol,"\nSol: ");
@@ -61,8 +61,8 @@ void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, ch
 	fprintf(arqSol,"\nofv: %lf", s.ofv);
 	fprintf(arqSol,"\nf1: %lf", s.f1);
 	fprintf(arqSol,"\nf2: %lf", s.f2);
-  	fprintf(arqSol,"\nBest time: %.3f",timeBest);
-	fprintf(arqSol,"\nTotal time:%.3f \n",timeTotal);
+  	fprintf(arqSol,"\nBestTime: %.3f",timeBest);
+	fprintf(arqSol,"\nTotalTime:%.3f \n",timeTotal);
 
 	fclose(arqSol);
 }

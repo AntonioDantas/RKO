@@ -8,7 +8,7 @@
             "name": "Debug (gdb)",
             "type": "cppdbg", // troque para "cppvsdbg" se usar MSVC
             "request": "launch",
-            "program": "${workspaceFolder}/Program/runTest.exe",
+            "program": "${workspaceFolder}/Program/runTest.exe ../Instances/debug.csv 9 1 0",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "make rebuild", // chama o make antes de depurar
             "MIMode": "gdb",
