@@ -194,6 +194,24 @@ void ReadData(char nameTable[])
     n = 2 * nodeCount;
 }
 
+double calculate_route_distance(const std::vector<int>& route, const std::vector<std::vector<double>>& dist) {
+    double total_distance = 0.0;
+    
+    // Uma rota com 0 ou 1 ponto tem distância 0.
+    if (route.size() < 2) {
+        return 0.0;
+    }
+
+    // Itera pelos pares de nós consecutivos na rota
+    for (size_t i = 0; i < route.size() - 1; ++i) {
+        int from_node = route[i];
+        int to_node = route[i + 1];
+        total_distance += dist[from_node][to_node];
+    }
+    
+    return total_distance;
+}
+
 /************************************************************************************
  Method: Decoders
  Description: mapping the random-key solutions into problem solutions
@@ -254,16 +272,16 @@ double Decoder(TSol& s)
     }
 
     // Revisit vehicles order based on rk values
-    std::iota(revisit_guide.begin(), revisit_guide.end(), 0);
-    std::sort(revisit_guide.begin(), revisit_guide.end(),
-              [&](int a, int b) { return s.rk[num_nodes + a] < s.rk[num_nodes + b]; });
+    //std::iota(revisit_guide.begin(), revisit_guide.end(), 0);
+    //std::sort(revisit_guide.begin(), revisit_guide.end(),
+    //          [&](int a, int b) { return s.rk[num_nodes + a] < s.rk[num_nodes + b]; });
 
-    std::vector<int> revisit_vehicle_order;
-    for (int id : revisit_guide) {
-        if (node[id].e > 0) {
-            revisit_vehicle_order.push_back(id);
-        }
-    }
+    //std::vector<int> revisit_vehicle_order;
+    //for (int id : revisit_guide) {
+    //    if (node[id].e > 0) {
+    //        revisit_vehicle_order.push_back(id);
+    //    }
+    //}
     
     // Add extra visits to the pool based on rk values
     for (int i = 0; i < num_nodes; ++i) {
@@ -277,14 +295,19 @@ double Decoder(TSol& s)
     }
 
     // Distribute extra visits to vehicles
-    if (!revisit_vehicle_order.empty() && !extra_visits_pool.empty()) {
+    //if (!revisit_vehicle_order.empty() && !extra_visits_pool.empty()) {
+    if (!extra_visits_pool.empty()) {
         for (size_t i = 0; i < extra_visits_pool.size(); ++i) {
             int target_to_add = extra_visits_pool[i];
             
-            int vehicle_id_to_assign = revisit_vehicle_order[i % revisit_vehicle_order.size()];
-            
-            auto it = std::find_if(s.routes.begin(), s.routes.end(), 
-                                   [&](const std::vector<int>& route){ return route[0] == vehicle_id_to_assign; });
+            //int vehicle_id_to_assign = revisit_vehicle_order[i % revisit_vehicle_order.size()];
+            //auto it = std::find_if(s.routes.begin(), s.routes.end(), 
+            //                       [&](const std::vector<int>& route){ return route[0] == vehicle_id_to_assign; });
+
+            auto it = std::min_element(s.routes.begin(), s.routes.end(),
+                [&dist](const std::vector<int>& routeA, const std::vector<int>& routeB) {
+                    return calculate_route_distance(routeA, dist) < calculate_route_distance(routeB, dist);
+                });
 
             if (it != s.routes.end()) {
                 if (it->back() != target_to_add) { // avoid adding the same target consecutively

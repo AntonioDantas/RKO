@@ -1,5 +1,5 @@
 /Results/*
-**.exe
+*.exe
+*.o
 main.o
-**/main.o
-**/runTest.exe
+runTest.exe
