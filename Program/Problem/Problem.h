@@ -9,6 +9,8 @@
 
 // Global Variables
 extern int n; // size of the vector solution
+int nodeCount;
+int veichesCount;
 
 //---------------------- DEFINITION OF TYPES OF PROBLEM SPECIFIC --------------------
 
@@ -28,11 +30,9 @@ static std::vector<std::vector<double>> distNorm;  // matrix with distance norma
 static std::vector<TNode> node;                // vector of nodes
 
 //----------------------- IMPLEMENTATION OF FUNCTIONS  -------------------------------
-// find min e max
-std::pair<double,double> find_min_max_matrix(
-    const std::vector<std::vector<double>>& m, size_t nRowsCols)
+// find max
+double find_max_matrix(const std::vector<std::vector<double>>& m, size_t nRowsCols)
 {
-    double minV = std::numeric_limits<double>::infinity();
     double maxV = -std::numeric_limits<double>::infinity();
     size_t n = nRowsCols;
     for (size_t i = 0; i < n && i < m.size(); ++i) {
@@ -40,24 +40,22 @@ std::pair<double,double> find_min_max_matrix(
             double val = m[i][j];
             if (!std::isfinite(val)) continue;
             if (std::fabs(val) <= 0.0) continue;
-            if (val < minV) minV = val;
             if (val > maxV) maxV = val;
         }
     }
-    return {minV, maxV};
+    return maxV;
 }
 
 // normaliza in-place
 void normalize_matrix(std::vector<std::vector<double>>& m, size_t nRowsCols)
 {
-    auto [minV, maxV] = find_min_max_matrix(m, nRowsCols);
+    auto maxV = find_max_matrix(m, nRowsCols);
 
-    if (!std::isfinite(minV) || !std::isfinite(maxV)) {
+    if (!std::isfinite(maxV)) {
         return;
     }
 
-    double range = maxV - minV;
-    if (range <= 0.0) {
+    if (maxV <= 0.0) {
         return;
     }
 
@@ -67,7 +65,7 @@ void normalize_matrix(std::vector<std::vector<double>>& m, size_t nRowsCols)
             double val = m[i][j];
             if (!std::isfinite(val)) continue;
             if (std::fabs(val) <= 0.0) continue;
-            m[i][j] = (val - minV) / range;
+            m[i][j] = val / maxV;
         }
     }
 }
@@ -76,25 +74,22 @@ void normalize_matrix(std::vector<std::vector<double>>& m, size_t nRowsCols)
 template<typename NodeType>
 void normalize_member(std::vector<NodeType>& nodes, double NodeType::* member, size_t nCount)
 {
-    double minV = std::numeric_limits<double>::infinity();
     double maxV = -std::numeric_limits<double>::infinity();
 
     size_t n = std::min(nCount, nodes.size());
     for (size_t i = 0; i < n; ++i) {
         double val = nodes[i].*member;
         if (!std::isfinite(val)) continue;
-        if (val < minV) minV = val;
         if (val > maxV) maxV = val;
     }
 
-    if (!std::isfinite(minV) || !std::isfinite(maxV)) return;
-    double range = maxV - minV;
-    if (range <= 0.0) return;
+    if (!std::isfinite(maxV)) return;
+    if (maxV <= 0.0) return;
 
     for (size_t i = 0; i < n; ++i) {
         double val = nodes[i].*member;
         if (!std::isfinite(val)) continue;
-        nodes[i].*member = (val - minV) / range;
+        nodes[i].*member = (val) / maxV;
     }
 }
 
@@ -126,7 +121,8 @@ void print_nodes(std::vector<TNode> nodes, size_t n) {
 *************************************************************************************/
 void ReadData(char nameTable[])
 {
-    int nodeCount = 0;
+    nodeCount = 0;
+    veichesCount = 0;
     char name[200] = "../Instances/";
     strcat(name, nameTable);
 
@@ -146,6 +142,12 @@ void ReadData(char nameTable[])
     //printf("\n%s", temp);
 
     fscanf(arq, "%d", &nodeCount);
+    //printf("Number of nodes: %d\n", nodeCount);
+
+    fscanf(arq, "%s", temp);
+    //printf("\n%s", temp);
+
+    fscanf(arq, "%d", &veichesCount);
     //printf("Number of nodes: %d\n", nodeCount);
 
     // read node informations
@@ -191,7 +193,7 @@ void ReadData(char nameTable[])
     //std::cout << "\nNodes:\n";
     //print_nodes(node, nodeCount);
 
-    n = 2 * nodeCount;
+    n = nodeCount + (nodeCount - veichesCount); // size of the vector solution
 }
 
 double calculate_route_distance(const std::vector<int>& route, const std::vector<std::vector<double>>& dist) {
@@ -220,7 +222,6 @@ double Decoder(TSol& s)
 {
     // penality for infeasible solutions
     const double PENALTY_FACTOR = 99999.0; 
-    const int num_nodes = n / 2;
 
     // Clean the last one solution
     s.routes.clear();
@@ -231,8 +232,7 @@ double Decoder(TSol& s)
     // Variables
     int last_vehicle_id = -1;
     std::vector<int> temp_target_pool;
-    std::vector<int> processing_order(num_nodes);
-    std::vector<int> revisit_guide(num_nodes);
+    std::vector<int> processing_order(nodeCount);
     std::vector<int> extra_visits_pool;
 
     // base on rk order
@@ -241,7 +241,7 @@ double Decoder(TSol& s)
               [&](int a, int b) { return s.rk[a] < s.rk[b]; });
 
     // Empty routes
-    for (int i = 0; i < num_nodes; ++i) {
+    for (int i = 0; i < nodeCount; ++i) {
         if (node[i].e > 0) { 
             s.routes.push_back({i});
         }
@@ -270,47 +270,36 @@ double Decoder(TSol& s)
             it->insert(it->end(), temp_target_pool.begin(), temp_target_pool.end());
         }
     }
-
-    // Revisit vehicles order based on rk values
-    //std::iota(revisit_guide.begin(), revisit_guide.end(), 0);
-    //std::sort(revisit_guide.begin(), revisit_guide.end(),
-    //          [&](int a, int b) { return s.rk[num_nodes + a] < s.rk[num_nodes + b]; });
-
-    //std::vector<int> revisit_vehicle_order;
-    //for (int id : revisit_guide) {
-    //    if (node[id].e > 0) {
-    //        revisit_vehicle_order.push_back(id);
-    //    }
-    //}
     
     // Add extra visits to the pool based on rk values
-    for (int i = 0; i < num_nodes; ++i) {
+    int count_extra_visits = 0;
+    for (int i = 0; i < nodeCount; ++i) {
         if (node[i].e == 0) {
-            double revisit_key = s.rk[num_nodes + i];
+            double revisit_key = s.rk[nodeCount + count_extra_visits];
             int extra_visits = floor(revisit_key * VMAX);
             for (int k = 0; k < extra_visits; ++k) {
                 extra_visits_pool.push_back(i);
             }
+            count_extra_visits++;
         }
     }
 
+    //Order extra visits by rk value
+    std::sort(extra_visits_pool.begin(), extra_visits_pool.end(),
+          [&](int a, int b) { return s.rk[a] < s.rk[b]; });
+
     // Distribute extra visits to vehicles
-    //if (!revisit_vehicle_order.empty() && !extra_visits_pool.empty()) {
     if (!extra_visits_pool.empty()) {
         for (size_t i = 0; i < extra_visits_pool.size(); ++i) {
             int target_to_add = extra_visits_pool[i];
             
-            //int vehicle_id_to_assign = revisit_vehicle_order[i % revisit_vehicle_order.size()];
-            //auto it = std::find_if(s.routes.begin(), s.routes.end(), 
-            //                       [&](const std::vector<int>& route){ return route[0] == vehicle_id_to_assign; });
-
             auto it = std::min_element(s.routes.begin(), s.routes.end(),
                 [&dist](const std::vector<int>& routeA, const std::vector<int>& routeB) {
                     return calculate_route_distance(routeA, dist) < calculate_route_distance(routeB, dist);
                 });
 
             if (it != s.routes.end()) {
-                if (it->back() != target_to_add) { // avoid adding the same target consecutively
+                if (it->back() != target_to_add) {
                     it->push_back(target_to_add);
                 }
             }
