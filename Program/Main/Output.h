@@ -85,17 +85,17 @@ void WriteResults(char mh[], double ofv, double f1, double f2, double ofvAverage
 
 	fprintf(arq,"\n%s", instance);
 	fprintf(arq,"\t%lf", alpha);
-	fprintf(arq,"\t%s", mh);
-    fprintf(arq,"\t%d", (int)ofvs.size());
-    for (unsigned int i=0; i<ofvs.size(); i++){
-        fprintf(arq,"\t%lf", ofvs[i]);   
-	}
+	//fprintf(arq,"\t%s", mh);
+    //fprintf(arq,"\t%d", (int)ofvs.size());
+    //for (unsigned int i=0; i<ofvs.size(); i++){
+    //    fprintf(arq,"\t%lf", ofvs[i]);   
+	//}
 	fprintf(arq,"\t%lf", ofv);
 	fprintf(arq,"\t%lf", f1);
 	fprintf(arq,"\t%lf", f2);
-	fprintf(arq,"\t%lf", ofvAverage);
-	fprintf(arq,"\t%.3f", timeBest);
-	fprintf(arq,"\t%.3f", timeTotal);
+	//fprintf(arq,"\t%lf", ofvAverage);
+	//fprintf(arq,"\t%.3f", timeBest);
+	//fprintf(arq,"\t%.3f", timeTotal);
 
 	fclose(arq);
 }
