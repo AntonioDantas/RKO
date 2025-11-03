@@ -10,9 +10,9 @@
 
 #include "Data.h"
  
-void WriteSolutionScreen(char mh[], TSol s, int n, float timeBest, float timeTotal, char instance[], double alpha)
+void WriteSolutionScreen(char mh[], TSol s, int n, float timeBest, float timeTotal, char instance[], double f1max, double f2max, int vmin,  int vmax, double reduction)
 {
-	printf("\n\n\nMetaheuristic: %s \nInstance: %s \nAlpha: %lf \nSol: ", mh, instance, alpha);
+	printf("\n\n\nMetaheuristic: %s \nInstance: %s \nF1max: %lf \nF2max: %lf \nVmin: %d \nVmax: %d \nReduction: %lf \nSol:", mh, instance, f1max, f2max, vmin, vmax, reduction);
 	for (int i=0; i<n; i++)
 	 	printf("%.3lf ", s.rk[i]);
 
@@ -32,7 +32,7 @@ void WriteSolutionScreen(char mh[], TSol s, int n, float timeBest, float timeTot
 		printf("%.2lf\n", pool[i].ofv);
 }
 
-void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, char instance[], double alpha)
+void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, char instance[], double f1max, double f2max, int vmin,  int vmax, double reduction)
 {
 	char name[256]="../Results/Solutions_";
 	strcat(name,mh);
@@ -48,7 +48,11 @@ void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, ch
 	}
 
     fprintf(arqSol,"\n\nInstance: '%s'", instance);
-    fprintf(arqSol,"\nAlpha: %lf", alpha);
+	fprintf(arqSol,"\nF1max: %lf",f1max);
+	fprintf(arqSol,"\nF2max: %lf",f2max);
+	fprintf(arqSol,"\nVmin: %d",vmin);
+	fprintf(arqSol,"\nVmax: %d",vmax);
+	fprintf(arqSol,"\nReduction: %lf",reduction);
 	fprintf(arqSol,"\nMethod: %s",mh);
 	fprintf(arqSol,"\nSol: ");
 	for (int i=0; i<n; i++)
@@ -67,7 +71,7 @@ void WriteSolution(char mh[], TSol s, int n, float timeBest, float timeTotal, ch
 	fclose(arqSol);
 }
 
-void WriteResults(char mh[], double ofv, double f1, double f2, double ofvAverage, std::vector <double> ofvs, float timeBest, float timeTotal, char instance[], double alpha)
+void WriteResults(char mh[], double ofv, double f1, double f2, double ofvAverage, std::vector <double> ofvs, float timeBest, float timeTotal, char instance[], double f1max, double f2max, int vmin,  int vmax, double reduction)
 {
 	char name[256]="../Results/Results_";
 	strcat(name,mh);
@@ -84,7 +88,11 @@ void WriteResults(char mh[], double ofv, double f1, double f2, double ofvAverage
 	}
 
 	fprintf(arq,"\n%s", instance);
-	fprintf(arq,"\t%lf", alpha);
+	fprintf(arq,"\t%lf", f1max);
+	fprintf(arq,"\t%lf", f2max);
+	fprintf(arq,"\t%d", vmin);
+	fprintf(arq,"\t%d", vmax);
+	fprintf(arq,"\t%lf", reduction);
 	fprintf(arq,"\t%s", mh);
     fprintf(arq,"\t%d", (int)ofvs.size());
     for (unsigned int i=0; i<ofvs.size(); i++){

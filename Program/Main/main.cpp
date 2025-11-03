@@ -85,7 +85,7 @@ int main(int argc, char *argv[ ])
 	while (!feof(arqProblems))
 	{
 		// read the name of instances, debug mode, local search module, maximum time, maximum number of runs, maximum number of threads
-        if (fscanf(arqProblems,"%s %d %d %lf %d %lf", nameTable, &MAXTIME, &MAXRUNS, &ALPHA, &VMAX, &REDUCTION) == 0) {
+        if (fscanf(arqProblems,"%s %d %d %lf %lf %d %d %lf", nameTable, &MAXTIME, &MAXRUNS, &F1MAX, &F2MAX, &VMIN, &VMAX, &REDUCTION) == 0) {
             printf("\nERROR: File %s not found\n", nameTable);
             exit(1);
         }
@@ -277,12 +277,12 @@ int main(int argc, char *argv[ ])
 
         if (!debug)
         {
-        	WriteSolution(nameMH, sBest, n, timeBest, timeTotal, instance, ALPHA);
-        	WriteResults(nameMH, foBest, f1, f2, foAverage, ofvs, timeBest, timeTotal, instance, ALPHA);
+        	WriteSolution(nameMH, sBest, n, timeBest, timeTotal, instance, F1MAX, F2MAX, VMIN, VMAX, REDUCTION);
+        	WriteResults(nameMH, foBest, f1, f2, foAverage, ofvs, timeBest, timeTotal, instance, F1MAX, F2MAX, VMIN, VMAX, REDUCTION);
         }
         else
         {
-            WriteSolutionScreen(nameMH, sBest, n, timeBest, timeTotal, instance, ALPHA);
+            WriteSolutionScreen(nameMH, sBest, n, timeBest, timeTotal, instance, F1MAX, F2MAX, VMIN, VMAX, REDUCTION);
         }
 
         // free memory with problem data

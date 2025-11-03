@@ -13,8 +13,10 @@ char instance[100];                         // name of instance
 int debug = 1;                              // 0 - run mode      		    1 - debug mode
 int MAXTIME = 100;                          // maximum runtime
 int MAXRUNS =  100;                         // maximum number of runs of the method
+int VMIN = 0;                               // minimum number of visits
 int VMAX = 1;                               // maximum number of visits
-double ALPHA =  1;                          // weight of the objective function
+double F1MAX =  0;                          // limite/weight of the f1 function (0 to infinity) or (0 to 1 mult-objective)
+double F2MAX =  1;                          // limite/weight of the f2 function (0 to 1)
 double REDUCTION = 0.8;                     // reduction value for the probabilistic
 
 // Run
