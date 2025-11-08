@@ -372,6 +372,7 @@ double Decoder(TSol &s)
     // validate and calculate objective functions
     double total_energy_overflow = 0.0;
     double total_distance = 0.0;
+    int total_visits = 0.0;
     std::vector<int> visit_counts(nodeCount, 0);
 
     for (const auto &route : s.routes)
@@ -399,6 +400,7 @@ double Decoder(TSol &s)
 
             s.f2 += node[to_node].p;
             visit_counts[to_node]++;
+            total_visits++;
         }
         s.f1 += current_distance_norm;
         total_distance += current_distance;
@@ -451,6 +453,7 @@ double Decoder(TSol &s)
             printf(" = %f \n", current_distance);
         }
         printf("\nTotal distance: %f \n", total_distance);
+        printf("\nProbabilty AVG: %f \n", s.f2 / total_visits);
     }
 
     if (!debug && print)
