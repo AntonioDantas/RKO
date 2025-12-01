@@ -1,2 +1,5 @@
 Instance	        Time	#Runs	F1max   F2max   Vmin   Vmax Reduction
-/OVRP/30p5v.ovrp	    120     20	    1000.0  0.0     0      3    0.8
+/OVRP/test.ovrp	    120     20	    2000.0  0.0     0      3    0.8
+/OVRP/test.ovrp	    120     20	    1000.0  0.0     0      3    0.8
+/OVRP/test.ovrp	    120     20	    0.0  80.0     0      3    0.8
+/OVRP/test.ovrp	    120     20	    0.0  50.0     0      3    0.8
